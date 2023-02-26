@@ -1,4 +1,11 @@
 function joinNs(endpoint) {
+  if (nsSocket) {
+    nsSocket.close();
+    document
+      .querySelector(`#user-input`)
+      .removeEventListener(`submit`, formSubmission);
+  }
+
   // console.log(endpoint);
   nsSocket = io(`http://localhost:9000${endpoint}`);
   nsSocket.on('nsRoomLoad', (nsRooms) => {
@@ -9,7 +16,7 @@ function joinNs(endpoint) {
       let glyph;
       room.privateRoom ? (glyph = `lock`) : (glyph = `globe`);
 
-      roomList.innerHTML += `<li class="room" onclick="joinRoom(1,2)">
+      roomList.innerHTML += `<li class="room">
     <span class="glyphicon glyphicon-${glyph}"></span>${room.roomTitle}
   </li>`;
     });
@@ -17,11 +24,11 @@ function joinNs(endpoint) {
     roomNodes.forEach((el) => {
       el.addEventListener(`click`, (e) => {
         console.log(`Someone clicked on ${e.target.innerText}`);
+        joinRoom(e.target.innerText);
       });
     });
     const topRoom = document.querySelector(`.room`);
     const topRoomName = topRoom.innerText;
-    // console.log(topRoomName);
     joinRoom(topRoomName);
   });
 
@@ -33,14 +40,17 @@ function joinNs(endpoint) {
 
   document
     .querySelector('.message-form')
-    .addEventListener('submit', (event) => {
-      event.preventDefault();
+    .addEventListener('submit', formSubmission);
+}
 
-      const textInput = document.querySelector('#user-message');
-      const newMessage = textInput.value;
-      nsSocket.emit('newMessageToServer', { text: newMessage });
-      // textInput.value = '';
-    });
+function formSubmission(event) {
+  event.preventDefault();
+
+  const textInput = document.querySelector('#user-message');
+  const newMessage = textInput.value;
+  nsSocket.emit('newMessageToServer', { text: newMessage });
+  // textInput.value = '';
+  textInput.blur();
 }
 
 function buildHTML(msg) {

@@ -1,4 +1,11 @@
-const socket = io('http://localhost:9000'); // '/' name space
+const username = prompt(`What is your username?`);
+
+// const socket = io('http://localhost:9000'); // '/' name space
+const socket = io('http://localhost:9000', {
+  query: {
+    username: username,
+  },
+}); // '/' name space
 // const socket2 = io('http://localhost:9000/wiki'); // '/wiki' namespace
 // const socket3 = io('http://localhost:9000/mozilla'); // '/mozilla' namespace
 // const socket4 = io('http://localhost:9000/linux'); // '/linux' namespace
@@ -18,6 +25,7 @@ socket.on('nsList', (nsData) => {
       const parent = e.target.closest(`div`);
       const nsEndpoint = parent.getAttribute(`ns`);
       console.log(`I should go here now ${nsEndpoint}`);
+      joinNs(nsEndpoint);
     });
   });
   joinNs(`/wiki`);
