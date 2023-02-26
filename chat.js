@@ -13,6 +13,7 @@ const expressServer = app.listen(9000);
 
 //CONNECTING SERVER W/ SOCKETIO
 const io = socketio(expressServer);
+//test
 
 //CREATION OF SOCKET(S) CONNECTION
 io.on('connection', (socket) => {
